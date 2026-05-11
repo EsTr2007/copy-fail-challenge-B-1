@@ -1,0 +1,7 @@
+=== HITO 1: KERNEL VULNERABLE CONFIRMADO ===
+Fecha: Mon May 11 13:32:47 UTC 2026
+Hostname: copy-fail-EsTr2007
+Kernel: 6.12.0
+Identidad: uid=1001(student) gid=1001(student) groups=1001(student)
+Modulos AF_ALG:
+cat: can't open '/proc/modules': No such file or directory
