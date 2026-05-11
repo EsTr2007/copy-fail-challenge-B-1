@@ -13,12 +13,24 @@ y dependencias Ubuntu 24.04 corregidas.
 ## Inicio rápido para el estudiante
 
 1. Abre un Codespace desde este repo.
-2. Configura tu identidad git:
+   ```bash
+   #CONFIGURACION DE EJEMPLO!!!!!!!!!!!
+   apt update
+   apt install gh
+   
+   gh api user --jq '"\(.name) → \(.email // .login)"'
+   
+   git config --global user.name "Jonathan E. Tito O."
+   git config --global user.email "jonathantito@users.noreply.github.com"
+   git config --global --add safe.directory /workspaces/copy-fail-challenge-1
+   make setup
+   ```
+3. Configura tu identidad git:
    ```bash
    git config --global user.name "Tu Nombre"
    git config --global user.email "tu@correo.com"
    ```
-3. Ejecuta:
+4. Ejecuta:
    ```bash
    make setup    # descarga kernel + arma rootfs (~5 min)
    make qemu     # arranca la VM vulnerable
