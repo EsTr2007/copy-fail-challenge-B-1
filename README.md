@@ -136,3 +136,15 @@ Esta v2 incorpora los siguientes fixes respecto a la v1:
 - BusyBox: deshabilitado `CONFIG_TC` (rompe compilación con kernels nuevos)
 - BusyBox: forzado `CONFIG_STATIC=y` y verificado con `file`
 - Workflow Actions: greps de verificación con `|| echo`, tolerantes
+# ¿Qué kernel corre?
+uname -r
+
+# ¿El módulo vulnerable está cargado?
+lsmod | grep alg
+
+# ¿Cuál es tu identidad actual? (debe ser student, NO root)
+id
+whoami
+
+# ¿AF_ALG está disponible?
+cat /proc/modules | grep algif
