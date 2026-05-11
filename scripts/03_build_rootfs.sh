@@ -33,7 +33,8 @@ cd "$BUSYBOX_SRC"
 
 echo -e "${CYAN}[2/5] Configurando BusyBox (static + sin TC)...${NC}"
 # yes "" alimenta enter a posibles preguntas interactivas de defconfig
-yes "" | make defconfig >/dev/null 2>&1
+#yes "" | make defconfig >/dev/null 2>&1
+make defconfig
 
 # CRÍTICO: editar el .config con sed (BusyBox NO tiene scripts/config)
 sed -i 's/# CONFIG_STATIC is not set/CONFIG_STATIC=y/' .config
