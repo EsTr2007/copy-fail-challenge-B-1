@@ -27,7 +27,7 @@ fi
 cd "$KERNEL_SRC"
 
 echo -e "${CYAN}[2/4] Configurando kernel mínimo funcional...${NC}"
-make tinyconfig
+make defconfig
 
 # ── Soporte 64-bit y arranque ──────────────────────────────────────────────
 ./scripts/config --enable 64BIT
