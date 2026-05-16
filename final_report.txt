@@ -1,0 +1,3 @@
+El kernel parcheado 5.15.0-179-generic arrancó correctamente en la VM. 
+El código de crypto/algif_aead.c usa TX SGL como source y RX SGL como destination en aead_request_set_crypt(), evitando la operación in-place vulnerable. 
+Al ejecutar copy_fail_exp.py, el exploit no logró escalar privilegios: pidió autenticación y falló, y la identidad final permaneció como uid=1000(etrujillo), no root.
