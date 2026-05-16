@@ -1,0 +1,75 @@
+=== HITO 4: PARCHE APLICADO EN VM UBUNTU ===
+Fecha: vie 15 may 2026 08:29:44 -05
+Kernel ejecutando: Linux ubuntu 5.15.0-179-generic #189 SMP Fri May 15 00:57:14 -05 2026 x86_64 x86_64 x86_64
+Identidad inicial:
+uid=1000(etrujillo) gid=1000(etrujillo) groups=1000(etrujillo),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),109(kvm),122(lpadmin),135(lxd),136(sambashare),139(libvirt)
+
+Intento exploit post-parche:
+
+Password: 
+su: Authentication failure
+
+Identidad final:
+uid=1000(etrujillo) gid=1000(etrujillo) groups=1000(etrujillo),4(adm),24(cdrom),27(sudo),30(dip),46(plugdev),109(kvm),122(lpadmin),135(lxd),136(sambashare),139(libvirt)
+
+Validación source:
+195:	aead_request_set_crypt(&areq->cra_u.aead_req, tsgl_src,
+OK: sg_chain no presente
+
+Bloque relevante:
+
+	/*
+	 * Create a per request TX SGL for this request which tracks the
+	 * SG entries from the global TX SGL.
+	 */
+	processed = used + ctx->aead_assoclen;
+	areq->tsgl_entries = af_alg_count_tsgl(sk, processed);
+	if (!areq->tsgl_entries)
+		areq->tsgl_entries = 1;
+	areq->tsgl = sock_kmalloc(sk, array_size(sizeof(*areq->tsgl),
+					         areq->tsgl_entries),
+				  GFP_KERNEL);
+	if (!areq->tsgl) {
+		err = -ENOMEM;
+		goto free;
+	}
+	sg_init_table(areq->tsgl, areq->tsgl_entries);
+	af_alg_pull_tsgl(sk, processed, areq->tsgl);
+	tsgl_src = areq->tsgl;
+
+	/*
+	 * Copy of AAD from source to destination
+	 *
+	 * The AAD is copied to the destination buffer without change. Even
+	 * when user space uses an in-place cipher operation, the kernel
+	 * will copy the data as it does not see whether such in-place operation
+	 * is initiated.
+	 */
+
+	/* Use the RX SGL as source (and destination) for crypto op. */
+	rsgl_src = areq->first_rsgl.sgl.sg;
+
+	memcpy_sglist(rsgl_src, tsgl_src, ctx->aead_assoclen);
+
+	/* Initialize the crypto operation */
+	aead_request_set_crypt(&areq->cra_u.aead_req, tsgl_src,
+			       areq->first_rsgl.sgl.sg, used, iv);
+	aead_request_set_ad(&areq->cra_u.aead_req, ctx->aead_assoclen);
+	aead_request_set_tfm(&areq->cra_u.aead_req, tfm);
+
+	if (msg->msg_iocb && !is_sync_kiocb(msg->msg_iocb)) {
+		/* AIO operation */
+		sock_hold(sk);
+		areq->iocb = msg->msg_iocb;
+
+		/* Remember output size that will be generated. */
+		areq->outlen = outlen;
+
+		aead_request_set_callback(&areq->cra_u.aead_req,
+					  CRYPTO_TFM_REQ_MAY_SLEEP,
+					  af_alg_async_cb, areq);
+		err = ctx->enc ? crypto_aead_encrypt(&areq->cra_u.aead_req) :
+				 crypto_aead_decrypt(&areq->cra_u.aead_req);
+
+		/* AIO operation in progress */
+		if (err == -EINPROGRESS)
