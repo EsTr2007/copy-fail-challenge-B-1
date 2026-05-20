@@ -15,7 +15,7 @@
     "KERNEL_TAG": "v6.12",
     "VULN_COMMIT": "72548b093ee3",
     "FIX_COMMIT": "a664bf3d603d",
-    "KERNEL_REPO": "jonathanetitoo/copy-fail-challenge-1",
+    "KERNEL_REPO": "REPO_DOCENTE",
     "KERNEL_RELEASE_TAG": "kernel-v6.12-vuln"
   },
 
